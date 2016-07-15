@@ -294,7 +294,8 @@ class StreamConnection extends HttpURLConnection implements Closeable {
           } else if ("HEAD".equals(method.get())) {
             req.set(new HttpHead(uri));
           } else if ("POST".equals(method.get())) {
-            req.set(new HttpPost(uri));
+              HttpPost post = new HttpPost(uri);
+              req.set(post);
           } else if ("PUT".equals(method.get())) {
             req.set(new HttpPut(uri));
           } else if ("DELETE".equals(method.get())) {
@@ -329,11 +330,15 @@ class StreamConnection extends HttpURLConnection implements Closeable {
         connect();
         if (req.get() != null) {
           if ("POST".equals(method.get())) {
-            ((HttpPost) req.get()).setEntity(new ByteArrayEntity(reqData.get().toByteArray()));
+            HttpPost post = (HttpPost)req.get();
+            final byte[] data = reqData.get().toByteArray();
+            HttpEntity bae = new ByteArrayEntity(data);
+            post.setEntity(bae);
           } else if ("PUT".equals(method.get())) {
             ((HttpPut) req.get()).setEntity(new ByteArrayEntity(reqData.get().toByteArray()));
           }
-          response.set(client.get().execute(req.get(), context.get()));
+          CloseableHttpResponse r = client.get().execute(req.get(), context.get());
+          response.set(r);
           if (response.get() != null && response.get().getEntity() != null) {
             entity.set(response.get().getEntity());
             response.get().setHeader("Cache-Control", "no-store, no-cache");

@@ -43,7 +43,12 @@ public class JbdExecChain implements ClientExecChain {
       HttpRequestWrapper request,
       HttpClientContext clientContext,
       HttpExecutionAware execAware) throws IOException, HttpException {
-    return new JbdResponse(execChain.execute(
-        route, HttpRequestWrapper.wrap(new JbdRequest(request)), clientContext, execAware));
+      
+      // at this point we are being called by CachingExec since the cache
+      // was missed and a real request needs to be executed for the content
+      // we can simply do any final manipulation of the request here
+      request.removeHeaders("Via");
+      
+      return execChain.execute(route, request, clientContext, execAware);
   }
 }

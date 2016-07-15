@@ -45,6 +45,9 @@ import java.util.regex.Pattern;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -114,7 +117,7 @@ class StreamConnectionClient {
     registry = RegistryBuilder.<ConnectionSocketFactory> create()
         .register("https", sslSocketFactory)
         .register("http", new SocketFactory())
-        .build();
+        .build(); 
     manager = new PoolingHttpClientConnectionManager(registry);
     manager.setDefaultMaxPerRoute(SettingsManager.settings().maxRouteConnections());
     manager.setMaxTotal(SettingsManager.settings().maxConnections());
@@ -134,6 +137,9 @@ class StreamConnectionClient {
         .setConnectionManager(manager)
         .setDefaultCredentialsProvider(ProxyAuth.instance())
         .setConnectionReuseStrategy(DefaultConnectionReuseStrategy.INSTANCE)
+        .addInterceptorFirst((HttpRequest request, HttpContext hc) -> {
+            request.removeHeaders("Via");
+        })
         .build();
   }
 
