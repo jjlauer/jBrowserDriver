@@ -227,7 +227,7 @@ class ElementServer extends RemoteObject implements ElementRemote, WebElement,
           @Override
           public Object perform() {
             validate(false);
-            node.call("scrollIntoView");
+//            node.call("scrollIntoView");
             if (context.keyboard.get().isShiftPressed()) {
               node.eval(
                   new StringBuilder()
@@ -347,7 +347,7 @@ class ElementServer extends RemoteObject implements ElementRemote, WebElement,
           @Override
           public Object perform() {
             validate(true);
-            node.call("scrollIntoView");
+//            node.call("scrollIntoView");
             node.call("focus");
             return null;
           }
@@ -373,7 +373,7 @@ class ElementServer extends RemoteObject implements ElementRemote, WebElement,
           public Object perform() {
             validate(false);
             context.item().httpListener.get().resetStatusCode();
-            node.call("scrollIntoView");
+//            node.call("scrollIntoView");
             node.call("focus");
             node.eval("this.value='';");
             return null;
